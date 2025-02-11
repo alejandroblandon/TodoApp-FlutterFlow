@@ -830,6 +830,14 @@ class _LoginWidgetState extends State<LoginWidget>
                           ),
                       ],
                     ),
+                    Text(
+                      'Developed by: Alejandro Blandon',
+                      style: FlutterFlowTheme.of(context).bodyMedium.override(
+                            fontFamily: 'Inter',
+                            fontSize: 12.0,
+                            letterSpacing: 0.0,
+                          ),
+                    ),
                   ],
                 ),
               ),
