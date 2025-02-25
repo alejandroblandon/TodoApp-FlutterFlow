@@ -1,13 +1,42 @@
 const axios = require("axios").default;
 const qs = require("qs");
 
+async function _zenquotesAPICall(context, ffVariables) {
+  var quote = ffVariables["quote"];
+
+  var url = `https://zenquotes.io/api/random?limit=1`;
+  var headers = {};
+  var params = {};
+  var ffApiRequestBody = `
+{
+  "quote": "${escapeStringForJson(quote)}"
+}`;
+
+  return makeApiRequest({
+    method: "post",
+    url,
+    headers,
+    params,
+    body: createBody({
+      headers,
+      params,
+      body: ffApiRequestBody,
+      bodyType: "JSON",
+    }),
+    returnBody: true,
+    isStreamingApi: false,
+  });
+}
+
 /// Helper functions to route to the appropriate API Call.
 
 async function makeApiCall(context, data) {
   var callName = data["callName"] || "";
   var variables = data["variables"] || {};
 
-  const callMap = {};
+  const callMap = {
+    ZenquotesAPICall: _zenquotesAPICall,
+  };
 
   if (!(callName in callMap)) {
     return {
@@ -75,6 +104,16 @@ function createBody({ headers, params, body, bodyType }) {
       headers["Content-Type"] = "application/x-www-form-urlencoded";
       return qs.stringify(params);
   }
+}
+function escapeStringForJson(val) {
+  if (typeof val !== "string") {
+    return val;
+  }
+  return val
+    .replace(/[\\]/g, "\\\\")
+    .replace(/["]/g, '\\"')
+    .replace(/[\n]/g, "\\n")
+    .replace(/[\t]/g, "\\t");
 }
 
 module.exports = { makeApiCall };
